@@ -1,0 +1,49 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Go workspace file
+go.work
+
+# Dependency directories
+vendor/
+
+# Build output
+docker-config-extractor
+docker-config-extractor.exe
+/bin/
+/build/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Debug files
+debug
+__debug_bin
+
+# Temporary files
+*.tmp
+*.bak
+*.log
+
+# OS generated files
+Thumbs.db

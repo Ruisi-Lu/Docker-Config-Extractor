@@ -94,10 +94,10 @@ func (m *Manager) CreateDevContainer(devContainerName string, enableDebugger boo
 	opts := &containerconfig.RunOptions{
 		Name: devContainerName,
 	}
-	runCmd := containerconfig.GenerateRunCommand(spec, opts)
+	runArgs := containerconfig.GenerateRunCommand(spec, opts)
 	
 	m.logger.Printf("Executing docker run command...")
-	if err := m.executeDockerRun(runCmd); err != nil {
+	if err := m.executeDockerRun(runArgs); err != nil {
 		return fmt.Errorf("failed to run dev container: %w", err)
 	}
 
@@ -126,23 +126,19 @@ func (m *Manager) CreateDevContainer(devContainerName string, enableDebugger boo
 }
 
 // executeDockerRun executes a docker run command (separated from docker exec)
-func (m *Manager) executeDockerRun(runCmd string) error {
+func (m *Manager) executeDockerRun(args []string) error {
 	m.logger.Println("Running docker run command...")
 	
-	// Parse the command properly (no shell chaining with &&)
-	args := strings.Fields(runCmd)
-	if len(args) == 0 {
-		return fmt.Errorf("empty docker run command")
-	}
-	
-	cmd := exec.Command(args[0], args[1:]...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	cmd := exec.Command("docker", append([]string{"run", "-d"}, args...)...)
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
 	
 	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("docker run failed: %w", err)
+		return fmt.Errorf("docker run failed: %w, stderr: %s", err, stderr.String())
 	}
 	
+	m.logger.Printf("Container started: %s", strings.TrimSpace(stdout.String()))
 	return nil
 }
 
